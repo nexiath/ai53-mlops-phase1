@@ -60,3 +60,17 @@ data/raw.dvc -------------->  prepare --> evaluate
 - **Which changes in `params.yaml` make TRAIN run again?** `data.image_size`, everything under `train` and `augmentation`, `compute.device` and the two `tracking` settings. Not `evaluation.batch_size` or `selection.run_id`.
 - **Why should EVALUATE track `selection.run_id`?** The model comes from MLflow, not from a local file. The Run ID is the only thing that tells DVC another model was selected.
 - **Which file contains scores DVC should track as metrics?** `reports/test_metrics.json` (and `reports/train_summary.json` for the validation scores).
+
+## Milestone 5 - Provenance and MLflow
+
+`src/provenance.py` now writes `reports/run_manifest.json` (Git commit and dirty flag, data identity, versions, settings, Run ID). `src/train.py` logs the parameters, the dataset, the metrics per epoch, the three report files and the model `bean-cnn`.
+
+For the dirty flag I ignore `reports/` and `dvc.lock`: DVC deletes the old outputs before running a stage, so they would always look modified.
+
+`uv run --locked pytest -q`: 19 passed.
+
+### Engineering checkpoint 4
+
+- Git records the code and the settings (`params.yaml`, `dvc.yaml`) at a commit.
+- DVC records which data and which outputs go with that commit (hashes in `data/raw.dvc` and `dvc.lock`).
+- MLflow records what happened in one Run: parameters, metrics, files and the trained model.
