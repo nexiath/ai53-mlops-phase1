@@ -17,3 +17,17 @@
 ### Engineering checkpoint 1
 
 A `model.pt` only shows that one training finished. It does not say which code, data, seed, settings or library versions were used, so nobody can rebuild it and get the same result. In the starter it is even overwritten at each run.
+
+## Milestone 1 - Repeatable training
+
+- `pyproject.toml`: lists the packages the project needs, with version ranges.
+- `uv.lock`: the exact versions resolved from it, so everyone installs the same ones.
+- `.venv/`: the local folder where uv installs these packages. It is not in Git, it is rebuilt with `uv sync --locked`.
+
+First `pytest -q` on the starter: several tests fail (reproducibility, validation, provenance) because of the TODOs.
+
+After completing `src/reproducibility.py`, `tests/test_reproducibility.py` passes (3 passed).
+
+### Engineering checkpoint 2
+
+No. The seed only fixes the random numbers. Results can still differ between CPUs, GPUs or library versions, because floating-point operations are not computed in the same order and some CUDA operations are not deterministic.
