@@ -31,3 +31,15 @@ After completing `src/reproducibility.py`, `tests/test_reproducibility.py` passe
 ### Engineering checkpoint 2
 
 No. The seed only fixes the random numbers. Results can still differ between CPUs, GPUs or library versions, because floating-point operations are not computed in the same order and some CUDA operations are not deterministic.
+
+## Milestone 2 - Data versioning
+
+I used option A (the included archives). The three checksums are OK and `check_dataset.py` finds 1034 / 133 / 128 images.
+
+`data/raw.dvc` is a small text file with the hash of the folder (`2b62d5a2...dir`, about 180 MB). Git tracks this file, not the images.
+
+### Engineering checkpoint 3
+
+- The Git remote (GitHub) stores the code, the settings and the small `.dvc` pointer files.
+- The DVC remote (`../ai53-phase1-dvc-storage`) stores the real image files, named by their hash.
+- No, `git push` only sends the pointer. The images are sent with `dvc push`.
