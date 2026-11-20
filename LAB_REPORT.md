@@ -43,3 +43,20 @@ I used option A (the included archives). The three checksums are OK and `check_d
 - The Git remote (GitHub) stores the code, the settings and the small `.dvc` pointer files.
 - The DVC remote (`../ai53-phase1-dvc-storage`) stores the real image files, named by their hash.
 - No, `git push` only sends the pointer. The images are sent with `dvc push`.
+
+## Milestone 4 - DVC pipeline
+
+`dvc.yaml` has four stages. `dvc dag` gives:
+
+```
+data/raw.dvc --> validate --> prepare --> train
+data/raw.dvc -------------->  prepare --> evaluate
+```
+
+`evaluate` does not depend on `train`.
+
+- **Should PREPARE depend on `reports/data_quality.json`?** Yes, so that prepare only runs after the data passed the checks.
+- **Should PREPARE also depend on `data/raw`?** Yes, it reads the raw images itself. The report alone could stay the same while an image changes.
+- **Which changes in `params.yaml` make TRAIN run again?** `data.image_size`, everything under `train` and `augmentation`, `compute.device` and the two `tracking` settings. Not `evaluation.batch_size` or `selection.run_id`.
+- **Why should EVALUATE track `selection.run_id`?** The model comes from MLflow, not from a local file. The Run ID is the only thing that tells DVC another model was selected.
+- **Which file contains scores DVC should track as metrics?** `reports/test_metrics.json` (and `reports/train_summary.json` for the validation scores).
