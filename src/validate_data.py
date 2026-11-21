@@ -21,6 +21,7 @@ def validate_dataset(raw_root: Path) -> dict:
 
     The report has no timestamp because it is a DVC output.
     """
+    # check each split one by one
     splits = {}
     total = 0
 

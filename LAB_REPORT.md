@@ -74,3 +74,58 @@ For the dirty flag I ignore `reports/` and `dvc.lock`: DVC deletes the old outpu
 - Git records the code and the settings (`params.yaml`, `dvc.yaml`) at a commit.
 - DVC records which data and which outputs go with that commit (hashes in `data/raw.dvc` and `dvc.lock`).
 - MLflow records what happened in one Run: parameters, metrics, files and the trained model.
+
+## Milestone 6 - Which stages rerun
+
+### 6.1 Predictions (before running DVC)
+
+| Change | VALIDATE | PREPARE | TRAIN | EVALUATE |
+|---|---|---|---|---|
+| Change `train.learning_rate` | REUSED | REUSED | RERUN | REUSED |
+| Change `data.image_size` | REUSED | RERUN | RERUN | NEEDS UPDATE |
+| Edit `src/validate_data.py`, same report | RERUN | REUSED | REUSED | REUSED |
+| Edit only `README.md` | REUSED | REUSED | REUSED | REUSED |
+
+### Engineering checkpoint 5
+
+- **`train.learning_rate`**: only `train` has this param in `dvc.yaml`, so only TRAIN reruns. VALIDATE and PREPARE do not use it. EVALUATE reads the test images and the selected Run ID, which do not change.
+- **Edit `src/validate_data.py`**: the file is a dep of `validate`, so VALIDATE reruns. But it writes the same `data_quality.json` (same hash), so PREPARE sees no change and is reused, and so are TRAIN and EVALUATE.
+
+### 6.3 Decisions before training
+
+- Main metric: validation macro-F1, because it counts the three classes the same. If two runs are equal, I take the one with the best validation accuracy.
+- Lower learning rate (Run B): I expect the model to learn more slowly, so with only 4 epochs the scores should be a bit lower than Run A.
+
+### 6.3 Run A (baseline)
+
+Run ID: `1c3ad17b89dc4a0ea48d52d01aebd2b5`
+
+In MLflow the Run has the 11 parameters, the 4 metrics per epoch plus `training_seconds`, the dataset `bean-training`, the 3 report files and the model `bean-cnn`.
+
+The manifest says `dirty: true` for this Run because `LAB_REPORT.md` was edited and not committed yet when I trained.
+
+### 6.4 Observed reruns
+
+| Check | VALIDATE | PREPARE | TRAIN | EVALUATE |
+|---|---|---|---|---|
+| First `dvc repro train` (Run A) | RERUN | RERUN | RERUN | NOT RUN |
+| Run again, no change | REUSED | REUSED | REUSED | NOT RUN |
+| Comment in `src/validate_data.py` | RERUN | REUSED | REUSED | NOT RUN |
+
+No change:
+
+```
+Stage 'validate' didn't change, skipping
+Stage 'prepare' didn't change, skipping
+Stage 'train' didn't change, skipping
+Data and pipelines are up to date.
+```
+
+Comment in the validator:
+
+```
+Running stage 'validate':
+Updating lock file 'dvc.lock'
+Stage 'prepare' didn't change, skipping
+Stage 'train' didn't change, skipping
+```
