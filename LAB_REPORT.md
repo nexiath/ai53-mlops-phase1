@@ -142,3 +142,11 @@ Running stage 'train':
 Run B ID: `4038e99f95aa46488e49ece0e8e6dd1c` (manifest: commit `c9ddf90`, `dirty: false`).
 
 The three checks match my predictions. The first run is the only one where everything ran, because nothing was in the cache yet.
+
+## Milestone 7 - Three controlled runs
+
+### 7.1 Run C setup
+
+Run C goes back to Run A's learning rate (0.001) and changes only `train.dropout` from 0.30 to 0.50.
+
+Prediction: more dropout means more neurons are turned off during training, so the model learns more slowly. With only 4 epochs I expect slightly lower validation scores than Run A.
