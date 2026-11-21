@@ -111,6 +111,7 @@ The manifest says `dirty: true` for this Run because `LAB_REPORT.md` was edited 
 | First `dvc repro train` (Run A) | RERUN | RERUN | RERUN | NOT RUN |
 | Run again, no change | REUSED | REUSED | REUSED | NOT RUN |
 | Comment in `src/validate_data.py` | RERUN | REUSED | REUSED | NOT RUN |
+| `train.learning_rate` = 0.0003 (Run B) | REUSED | REUSED | RERUN | NOT RUN |
 
 No change:
 
@@ -129,3 +130,15 @@ Updating lock file 'dvc.lock'
 Stage 'prepare' didn't change, skipping
 Stage 'train' didn't change, skipping
 ```
+
+Learning rate 0.0003:
+
+```
+Stage 'validate' didn't change, skipping
+Stage 'prepare' didn't change, skipping
+Running stage 'train':
+```
+
+Run B ID: `4038e99f95aa46488e49ece0e8e6dd1c` (manifest: commit `c9ddf90`, `dirty: false`).
+
+The three checks match my predictions. The first run is the only one where everything ran, because nothing was in the cache yet.
