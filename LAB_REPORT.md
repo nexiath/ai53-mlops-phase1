@@ -169,3 +169,12 @@ The training time differences are not meaningful, the CPU was just less busy for
 ### Engineering checkpoint 6
 
 Macro-F1 gives the same weight to each of the three diseases, so a model that is bad on one class gets a lower score even if its accuracy looks fine. The test set is used only once, after choosing, so that the final score is not biased by the choice. If I looked at the test set to pick the model, it would become another validation set.
+
+## Milestone 8 - Selection and final test
+
+### Selected Run
+
+- Run ID: `1c3ad17b89dc4a0ea48d52d01aebd2b5` (Run A, baseline).
+- Main metric: validation macro-F1 = 0.6254, the best of the three runs.
+- Other evidence: it also has the best validation accuracy (0.6391) and the lowest validation loss (0.8326).
+- Limitation: the gap with B and C is only a few images out of 133, with one seed. Run C was even better than A at epoch 3, so another seed or more epochs could change the ranking.
