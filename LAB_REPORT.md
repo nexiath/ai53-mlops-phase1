@@ -150,3 +150,22 @@ The three checks match my predictions. The first run is the only one where every
 Run C goes back to Run A's learning rate (0.001) and changes only `train.dropout` from 0.30 to 0.50.
 
 Prediction: more dropout means more neurons are turned off during training, so the model learns more slowly. With only 4 epochs I expect slightly lower validation scores than Run A.
+
+### 7.2 Comparison (last epoch)
+
+| Run | Controlled change | Val. Accuracy | Val. Macro-F1 | Training time | MLflow Run ID |
+|---|---|---|---|---|---|
+| A | Baseline (lr 0.001, dropout 0.30) | 0.6391 | 0.6254 | 11.9 s | `1c3ad17b89dc4a0ea48d52d01aebd2b5` |
+| B | lr 0.0003 | 0.6165 | 0.6091 | 11.5 s | `4038e99f95aa46488e49ece0e8e6dd1c` |
+| C | dropout 0.50 | 0.6165 | 0.6068 | 8.7 s | `41f0949dc44c415589b4507410df37f7` |
+
+- **B vs A**: B is lower, as predicted. Its validation loss was still going down a lot at epoch 4, so it just needs more epochs.
+- **C vs A**: C is lower, as predicted. But C was better than A at epoch 3 (macro-F1 0.6511), so the difference depends a lot on which epoch we stop at.
+
+The gaps are small: 0.6391 vs 0.6165 is only 3 images out of 133. With one seed and a small validation set, I would not say A is better in general.
+
+The training time differences are not meaningful, the CPU was just less busy for Run C.
+
+### Engineering checkpoint 6
+
+Macro-F1 gives the same weight to each of the three diseases, so a model that is bad on one class gets a lower score even if its accuracy looks fine. The test set is used only once, after choosing, so that the final score is not biased by the choice. If I looked at the test set to pick the model, it would become another validation set.
