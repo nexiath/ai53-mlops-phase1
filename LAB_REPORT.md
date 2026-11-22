@@ -178,3 +178,15 @@ Macro-F1 gives the same weight to each of the three diseases, so a model that is
 - Main metric: validation macro-F1 = 0.6254, the best of the three runs.
 - Other evidence: it also has the best validation accuracy (0.6391) and the lowest validation loss (0.8326).
 - Limitation: the gap with B and C is only a few images out of 133, with one seed. Run C was even better than A at epoch 3, so another seed or more epochs could change the ranking.
+
+### Final test
+
+`dvc repro evaluate` loaded `runs:/1c3ad17b89dc4a0ea48d52d01aebd2b5/bean-cnn` and passed the Run checks (FINISHED, same experiment, same image size and classes, same training data identity).
+
+| Selected Run | Test accuracy | Test macro-F1 |
+|---|---|---|
+| `1c3ad17b89dc4a0ea48d52d01aebd2b5` | 0.6484 | 0.6445 |
+
+`reports/test_metrics.json` lists the same Run ID. The test scores are close to the validation scores (0.6391 / 0.6254), so the selection did not overfit the validation set.
+
+The confusion matrix shows the model is good on `healthy` (81% recall) but often confuses the two diseases with each other and with `healthy` (53% recall on `angular_leaf_spot`). It is a small CNN trained for only 4 epochs, so it is far from a usable model.
